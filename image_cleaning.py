@@ -20,7 +20,7 @@ def resize_images():
         cv2.imwrite(output_path, I_resized)
 
 
-def change_white_background_to_white():
+def change_white_background_to_black():
     current_dir = os.getcwd()
     dataset_path = f"{current_dir}/pokemons"
     for file in os.listdir(dataset_path):
