@@ -68,9 +68,25 @@ def add_vary_contrast():
             adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
             move_images_to_different_director(adjusted, f"{current_dir}/pokemons_contrast", file, "contrast")            
 
+def add_noise():
+    current_dir = os.getcwd()
+    dataset_path = f"{current_dir}/pokemons_contrast"
+    for file in os.listdir(dataset_path):
+        file_path = os.path.join(dataset_path, file)
+        if file.endswith(".jpg"):
+            image = cv2.imread(file_path)
+            row, col, ch = image.shape
+            mean = 0
+            var = 0.1
+            sigma = var ** 0.5
+            gauss = np.random.normal(mean, sigma, (row, col, ch))
+            gauss = gauss.reshape(row, col, ch)
+            noisy = image + gauss
+            move_images_to_different_director(noisy, f"{current_dir}/pokemons_noise", file, "noise")
+
 
 def main():
-    add_vary_contrast()
+    add_noise()
     
 if __name__ == "__main__":
     main()
