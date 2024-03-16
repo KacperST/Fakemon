@@ -42,6 +42,8 @@ def change_white_background_to_black():
 
             move_images_to_different_director(result, f"{current_dir}/pokemons_black_background", file)
             
+
+            
 def main():
     change_white_background_to_black()  
     
