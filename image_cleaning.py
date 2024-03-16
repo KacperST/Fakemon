@@ -3,8 +3,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-def move_images_to_different_director(image: np.array, output_dir: str, file:str) -> None:
-    output_path = os.path.join(output_dir, file)
+def move_images_to_different_director(image: np.array, output_dir: str, file:str, word: str) -> None:
+    file_name, file_extension = os.path.splitext(file)
+    new_file_name = file_name + f"_{word}" + file_extension
+    output_path = os.path.join(output_dir, new_file_name)
     cv2.imwrite(output_path, image)
          
          
@@ -40,12 +42,22 @@ def change_white_background_to_black():
 
             result = cv2.bitwise_and(image, mask)
 
-            move_images_to_different_director(result, f"{current_dir}/pokemons_black_background", file)
+            move_images_to_different_director(result, f"{current_dir}/pokemons_black_background", file, "")
             
+            
+def mirror_reflection():
+    current_dir = os.getcwd()
+    dataset_path = f"{current_dir}/pokemons_black_background"
+    for file in os.listdir(dataset_path):
+        file_path = os.path.join(dataset_path, file)
+        if file.endswith(".jpg"):
+            image = cv2.imread(file_path)
+            image = cv2.flip(image, 1)  # Flip horizontally
+            move_images_to_different_director(image, f"{current_dir}/pokemons_mirror_reflection", file, "reflected")
 
             
 def main():
-    change_white_background_to_black()  
+    mirror_reflection()  
     
 if __name__ == "__main__":
     main()
