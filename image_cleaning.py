@@ -17,7 +17,7 @@ def resize_images():
         file_path = os.path.join(dataset_path, file)
         I = cv2.imread(file_path)
         I_resized = cv2.resize(I, (512, 512))
-        output_dir = f"{current_dir}/pokemon_resized_512"
+        output_dir = f"{current_dir}/pokemons_resized_512"
         output_path = os.path.join(output_dir, file)
         cv2.imwrite(output_path, I_resized)
 
@@ -56,8 +56,21 @@ def mirror_reflection():
             move_images_to_different_director(image, f"{current_dir}/pokemons_mirror_reflection", file, "reflected")
 
             
+def add_vary_contrast():
+    current_dir = os.getcwd()
+    dataset_path = f"{current_dir}/pokemons_mirror_reflection"
+    for file in os.listdir(dataset_path):
+        file_path = os.path.join(dataset_path, file)
+        if file.endswith(".jpg"):
+            image = cv2.imread(file_path)
+            alpha = 1.3  # Contrast control (1.0-3.0)
+            beta = 0  # Brightness control (0-100)
+            adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+            move_images_to_different_director(adjusted, f"{current_dir}/pokemons_contrast", file, "contrast")            
+
+
 def main():
-    mirror_reflection()  
+    add_vary_contrast()
     
 if __name__ == "__main__":
     main()
