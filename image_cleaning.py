@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,20 +10,7 @@ def move_images_to_different_director(image: np.array, output_dir: str, file:str
     output_path = os.path.join(output_dir, new_file_name)
     cv2.imwrite(output_path, image)
          
-         
-def resize_images():
-    current_dir = os.getcwd()
-    dataset_path = f"{current_dir}/pokemons"
-    for file in os.listdir(dataset_path):
-        file_path = os.path.join(dataset_path, file)
-        I = cv2.imread(file_path)
-        I_resized = cv2.resize(I, (512, 512))
-        output_dir = f"{current_dir}/pokemons_resized_512"
-        output_path = os.path.join(output_dir, file)
-        cv2.imwrite(output_path, I_resized)
-
-
-def change_white_background_to_black():
+def change_white_background_to_black() -> None:
     current_dir = os.getcwd()
     dataset_path = f"{current_dir}/pokemons"
     for file in os.listdir(dataset_path):
@@ -44,50 +32,70 @@ def change_white_background_to_black():
 
             move_images_to_different_director(result, f"{current_dir}/pokemons_black_background", file, "")
             
-            
-def mirror_reflection():
-    current_dir = os.getcwd()
-    dataset_path = f"{current_dir}/pokemons_black_background"
+
+
+def resize_images2(dataset_path: str,output_dir_path:str, image_size:Tuple[int, int] =(256, 256)) -> None:
+    # create output directory if it does not exist
+    if not os.path.exists(output_dir_path):
+        os.makedirs(os.path.join(os.getcwd(), output_dir_path))
     for file in os.listdir(dataset_path):
         file_path = os.path.join(dataset_path, file)
-        if file.endswith(".jpg"):
-            image = cv2.imread(file_path)
-            image = cv2.flip(image, 1)  # Flip horizontally
-            move_images_to_different_director(image, f"{current_dir}/pokemons_mirror_reflection", file, "reflected")
+        I = cv2.imread(file_path)
+        I_resized = cv2.resize(I, image_size)
+        file_name, file_extension = os.path.splitext(file)
+        new_file_name = file_name + f"_resized{image_size[0]}" + file_extension
+        output_path = os.path.join(output_dir_path, new_file_name)
+        cv2.imwrite(output_path, I_resized)
 
-            
-def add_vary_contrast():
-    current_dir = os.getcwd()
-    dataset_path = f"{current_dir}/pokemons_mirror_reflection"
+def change_contrast(dataset_path: str, output_dir_path:str, alpha: float, beta: float) -> None:
     for file in os.listdir(dataset_path):
         file_path = os.path.join(dataset_path, file)
-        if file.endswith(".jpg"):
-            image = cv2.imread(file_path)
-            alpha = 1.3  # Contrast control (1.0-3.0)
-            beta = 0  # Brightness control (0-100)
-            adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
-            move_images_to_different_director(adjusted, f"{current_dir}/pokemons_contrast", file, "contrast")            
+        I = cv2.imread(file_path)
+        adjusted = cv2.convertScaleAbs(I, alpha=alpha, beta=beta)
+        file_name, file_extension = os.path.splitext(file)
+        new_file_name = file_name + f"_contrast{alpha}" + file_extension
+        output_path = os.path.join(output_dir_path, new_file_name)
+        cv2.imwrite(output_path, adjusted)
 
-def add_noise():
+def add_reflection(dataset_path: str, output_dir_path:str) -> None:
+    for file in os.listdir(dataset_path):
+        file_path = os.path.join(dataset_path, file)
+        I = cv2.imread(file_path)
+        I_reflected = cv2.flip(I, 1)  # Flip horizontally
+        file_name, file_extension = os.path.splitext(file)
+        new_file_name = file_name + f"_reflected" + file_extension
+        output_path = os.path.join(output_dir_path, new_file_name)
+        cv2.imwrite(output_path, I_reflected)
+
+def add_noise2(dataset_path: str, output_dir_path:str) -> None:
+    for file in os.listdir(dataset_path):
+        file_path = os.path.join(dataset_path, file)
+        I = cv2.imread(file_path)
+        row, col, ch = I.shape
+        mean = 0
+        var = 0.1
+        sigma = var ** 0.5
+        gauss = np.random.normal(mean, sigma, (row, col, ch))
+        gauss = gauss.reshape(row, col, ch)
+        noisy = I + gauss
+        file_name, file_extension = os.path.splitext(file)
+        new_file_name = file_name + f"_noisy" + file_extension
+        output_path = os.path.join(output_dir_path, new_file_name)
+        cv2.imwrite(output_path, noisy)
+
+
+def pipeline(dataset_path: str, output_dir_path:str) -> None:
+    resize_images2(dataset_path, output_dir_path, (256, 256))
+    add_reflection(output_dir_path, output_dir_path)
+    change_contrast(output_dir_path, output_dir_path, 1.3, 0)
+    add_noise2(output_dir_path, output_dir_path)
+
+
+def main() -> None:
     current_dir = os.getcwd()
     dataset_path = f"{current_dir}/pokemons_contrast"
-    for file in os.listdir(dataset_path):
-        file_path = os.path.join(dataset_path, file)
-        if file.endswith(".jpg"):
-            image = cv2.imread(file_path)
-            row, col, ch = image.shape
-            mean = 0
-            var = 0.1
-            sigma = var ** 0.5
-            gauss = np.random.normal(mean, sigma, (row, col, ch))
-            gauss = gauss.reshape(row, col, ch)
-            noisy = image + gauss
-            move_images_to_different_director(noisy, f"{current_dir}/pokemons_noise", file, "noise")
-
-
-def main():
-    add_noise()
-    
+    output_dir = f"{current_dir}/pokemons_noise"
+    pipeline(dataset_path, output_dir)
 if __name__ == "__main__":
     main()
     
