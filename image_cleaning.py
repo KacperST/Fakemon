@@ -110,7 +110,7 @@ def add_negative(dataset_path: str, output_dir_path: str, image_size:Tuple[int, 
         output_path = os.path.join(output_dir_path, new_file_name)
         cv2.imwrite(output_path, I_neg)
 
-
+    print("\nNegative added.\n")
 
 def pipeline(dataset_path: str, output_dir_path:str) -> None:
     check_size(dataset_path)
