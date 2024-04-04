@@ -92,6 +92,25 @@ def add_noise2(dataset_path: str, output_dir_path:str) -> None:
     
     print("\nNoise added.\n")
 
+def add_negative(dataset_path: str, output_dir_path: str, image_size:Tuple[int, int] =(256, 256)) -> None:
+    def filter_jpg(file: str):
+        if file.split('.')[1].lower() == 'jpg':
+            return True
+        else:
+            return False
+    
+    jpg_images = list(filter(filter_jpg, os.listdir(dataset_path)))
+    for file in tqdm(jpg_images):
+        file_path = os.path.join(dataset_path, file)
+        I = cv2.imread(file_path)
+        I_r = cv2.resize(I, image_size)
+        I_neg = abs(255-I_r)
+        file_name, file_extension = os.path.splitext(file)
+        new_file_name = file_name + f"_negative" + file_extension
+        output_path = os.path.join(output_dir_path, new_file_name)
+        cv2.imwrite(output_path, I_neg)
+
+
 
 def pipeline(dataset_path: str, output_dir_path:str) -> None:
     check_size(dataset_path)
@@ -100,6 +119,8 @@ def pipeline(dataset_path: str, output_dir_path:str) -> None:
     add_reflection(output_dir_path, output_dir_path)
     change_contrast(output_dir_path, output_dir_path, 1.3, 0)
     add_noise2(output_dir_path, output_dir_path)
+    add_negative(dataset_path, output_dir_path)
+
 
 
 def main() -> None:
