@@ -126,7 +126,7 @@ def pipeline(dataset_path: str, output_dir_path:str) -> None:
 def main() -> None:
     current_dir = os.getcwd()
     dataset_path = f"{current_dir}/pokemons"
-    output_dir = f"{current_dir}/pokemons_dataset"
+    output_dir = f"{current_dir}/pokemons_dataset/pokemon"
     pipeline(dataset_path, output_dir)
     
     

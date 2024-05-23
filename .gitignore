@@ -1,5 +1,6 @@
 # Files
-pokemons_resized_256/
+pokemons/
+pokemons_dataset/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
